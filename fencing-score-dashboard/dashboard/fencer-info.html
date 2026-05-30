@@ -125,6 +125,12 @@
         <div class="fencer-panel left-panel">
             <h3>Fencer on the Left</h3>
             <div class="form-group">
+                <label for="left-dropdown">Previous Fencers:</label>
+                <select id="left-dropdown">
+                    <option value="none">Fencer (BFC) -- Pronouns</option>
+                </select>
+            </div>
+            <div class="form-group">
                 <label for="left-name">Name:</label>
                 <input type="text" id="left-name" placeholder="Enter fencer's name">
             </div>
@@ -141,6 +147,12 @@
         <!-- Right Fencer -->
         <div class="fencer-panel right-panel">
             <h3>Fencer on the Right</h3>
+            <div class="form-group">
+                <label for="right-dropdown">Previous Fencers:</label>
+                <select id="right-dropdown">
+                    <option value="none">Fencer (BFC) -- Pronouns</option>
+                </select>
+            </div>
             <div class="form-group">
                 <label for="right-name">Name:</label>
                 <input type="text" id="right-name" placeholder="Enter fencer's name">
@@ -162,97 +174,6 @@
     </div>
 
     <div id="status" class="status"></div>
-
-    <script>
-        const fencersReplicant = nodecg.Replicant('fencers');
-
-        // Input elements
-        const leftName = document.getElementById('left-name');
-        const leftPronouns = document.getElementById('left-pronouns');
-        const leftClub = document.getElementById('left-club');
-        const rightName = document.getElementById('right-name');
-        const rightPronouns = document.getElementById('right-pronouns');
-        const rightClub = document.getElementById('right-club');
-
-        // Buttons
-        const updateBtn = document.getElementById('update-btn');
-        const clearBtn = document.getElementById('clear-btn');
-        const status = document.getElementById('status');
-
-        // Load existing data when replicant changes
-        fencersReplicant.on('change', (newValue) => {
-            if (newValue) {
-                leftName.value = newValue.left?.name || '';
-                leftPronouns.value = newValue.left?.pronouns || '';
-                leftClub.value = newValue.left?.club || '';
-                rightName.value = newValue.right?.name || '';
-                rightPronouns.value = newValue.right?.pronouns || '';
-                rightClub.value = newValue.right?.club || '';
-            }
-        });
-
-        // Show status message
-        function showStatus(message, isError = false) {
-            status.textContent = message;
-            status.className = `status ${isError ? 'error' : 'success'}`;
-            status.style.display = 'block';
-            
-            setTimeout(() => {
-                status.style.display = 'none';
-            }, 3000);
-        }
-
-        // Update fencer information
-        updateBtn.addEventListener('click', () => {
-            try {
-                const fencerData = {
-                    left: {
-                        name: leftName.value.trim(),
-                        pronouns: leftPronouns.value.trim(),
-                        club: leftClub.value.trim()
-                    },
-                    right: {
-                        name: rightName.value.trim(),
-                        pronouns: rightPronouns.value.trim(),
-                        club: rightClub.value.trim()
-                    }
-                };
-
-                fencersReplicant.value = fencerData;
-                showStatus('Fencer information updated successfully!');
-            } catch (error) {
-                console.error('Error updating fencer data:', error);
-                showStatus('Error updating fencer information', true);
-            }
-        });
-
-        // Clear all fields
-        clearBtn.addEventListener('click', () => {
-            if (confirm('Are you sure you want to clear all fencer information?')) {
-                try {
-                    const emptyData = {
-                        left: {
-                            name: '',
-                            pronouns: '',
-                            club: ''
-                        },
-                        right: {
-                            name: '',
-                            pronouns: '',
-                            club: ''
-                        }
-                    };
-
-                    fencersReplicant.value = emptyData;
-                    showStatus('All fencer information cleared');
-                } catch (error) {
-                    console.error('Error clearing fencer data:', error);
-                    showStatus('Error clearing fencer information', true);
-                }
-            }
-        });
-
-         
-    </script>
+    <script src="scripts/fencer-info.js" />
 </body>
 </html>

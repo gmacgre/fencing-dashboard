@@ -126,6 +126,7 @@
 
     <div class="actions">
         <button class="btn btn-secondary" type="submit" id="setBoth"> Reset Full Score </button>
+        <button class="btn btn-secondary" type="submit" id="doubleTouch"> Double Touch </button>
     </div>
 <script>
     const scoresReplicant = nodecg.Replicant('score');
@@ -142,6 +143,7 @@
     const setBtnRight = document.getElementById('setRight');
 
     const resetBtnBoth = document.getElementById('setBoth');
+    const doubleTouchBtn = document.getElementById('doubleTouch');    
 
     incrementBtnLeft.addEventListener('click', () => {
         try {
@@ -231,6 +233,22 @@
         FOTR_Score.textContent = 0;
         }
     )
+
+    doubleTouchBtn.addEventListener('click', () => {
+        try {
+            const scoreData = {
+                left: +FOTL_Score.textContent + 1,
+                right: +FOTR_Score.textContent + 1
+            };
+            scoresReplicant.value = scoreData;
+            FOTL_Score.textContent = +FOTL_Score.textContent + 1;
+            FOTR_Score.textContent = +FOTR_Score.textContent + 1;
+            }
+        catch(error) {
+            console.error('Error updating fencer data', error);
+            showStatus('Error updating fencer data', error);
+        }
+    })
 
 
     // // Update UI when replicant changes
