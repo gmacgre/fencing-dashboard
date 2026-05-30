@@ -37,7 +37,6 @@ body {
 }
 
 .round-container{
-
     display: flex;
     justify-content: center;
     align-items: flex-end;
@@ -49,9 +48,8 @@ body {
 .stacked-radial {
   background:
     radial-gradient(circle at 50% 100%, rgba(217, 34, 39, 0.5), transparent 150%),
-    /*radial-gradient(circle at 100% 90%, rgb(255 255 255 / 50%), transparent 20.71%),
-    radial-gradient(circle at 0% 90%, rgba(255, 255, 255, 0.5), transparent 20.71%)*/
-      white;}
+      white;
+}
 
 .scoreboard {
     display: flex;
@@ -102,20 +100,37 @@ img {
     overflow: hidden;
     z-index: 2;
 }
+
+.noshow {
+    background: transparent!important;
+    border: 0px!important;
+}
+
+.card {
+    background: rgba(255, 215, 0, 0.9);
+    border: 2px solid black;
+    width: 40px;
+    height: 60px;
+    z-index: 2;
+    border-radius: 5px 5px 5px 5px;
+}
         
     </style>
 </head>
 <body>
     <div class="round-container bitcount-single-ink">
         <div class="scoreboard stacked-radial">
+            <div class="card noshow" id="FOTLCard"></div>
             <div class="fencer" id="FOTL">
                 <div class="fencer-score" id="FOTLScore">0</div>
             </div>
                 <!-- Center Divider -->
+            <div class="card"></div>
             <img src="badgerIcon.webp" alt="Badger Fencing Club">
             <div class="fencer" id="FOTR">
                 <div class="fencer-score" id="FOTRScore">0</div>
             </div>
+            <div class="card noshow" id="FOTRCard"></div>
         </div>
     </div>
 
@@ -124,15 +139,17 @@ img {
         
         const FOTL_Score = document.getElementById('FOTLScore');
         const FOTR_Score = document.getElementById('FOTRScore');
+        const FOTL_Card = document.getElementById('FOTLCard');
+        const FOTR_Card = document.getElementById('FOTRCard');
 
         scoresReplicant.on('change', (newValue) => {
             if (newValue) {
-                console.log(newValue.left);
-                console.log(newValue.right);
+                console.log(newValue);
                 // Update FOTL
                 if (newValue.left !== null){
+                    const newScore = FOTL_Score.textContent != newValue.left
                     FOTL_Score.textContent = newValue.left
-                    if (newValue.left !== 0){
+                    if (newScore && (newValue.left !== 0)){
                         FOTL_Score.classList.add('score-flash-left');
                         setTimeout(() => {
                             FOTL_Score.classList.remove('score-flash-left');
@@ -143,8 +160,9 @@ img {
 
                 // Update FOTR
                 if (newValue.right !== null){
+                    const newScore = FOTR_Score.textContent != newValue.right
                     FOTR_Score.textContent = newValue.right
-                    if (newValue.right !== 0){
+                    if (newScore && (newValue.right !== 0)){
                         FOTR_Score.classList.add('score-flash-right');
                         setTimeout(() => {
                             FOTR_Score.classList.remove('score-flash-right');
@@ -152,7 +170,25 @@ img {
                     }
 
                 };
-                
+
+                if(newValue.hasCardLeft !== null) {
+                    console.log(`${newValue.hasCardLeft} is left`)
+                    if(newValue.hasCardLeft) {
+                        FOTL_Card.classList.remove("noshow")
+                    }
+                    else {
+                        FOTL_Card.classList.add("noshow")
+                    }
+                }
+                if(newValue.hasCardRight !== null) {
+                    console.log(`${newValue.hasCardRight} is right`)
+                    if(newValue.hasCardRight) {
+                        FOTR_Card.classList.remove("noshow")
+                    }
+                    else {
+                        FOTR_Card.classList.add("noshow")
+                    }
+                }               
             }
         }
         );

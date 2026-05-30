@@ -111,6 +111,7 @@
             <button id="incrementLeft" type="submit" class="btn btn-primary">+1</button>
             <button id="decrementLeft" type="submit" class="btn btn-danger">-1</button>
             <button id="setLeft" type="submit" class="btn btn-success">Reset</button>
+            <button id="cardLeft" type="submit" class="btn btn-success">Toggle Card</button>
         </div>
     </div>
 
@@ -121,6 +122,7 @@
             <button id="incrementRight" type="submit" class="btn btn-primary">+1</button>
             <button id="decrementRight" type="submit" class="btn btn-danger">-1</button>
             <button id="setRight" type="submit" class="btn btn-success">Reset</button>
+            <button id="cardRight" type="submit" class="btn btn-success">Toggle Card</button>
         </div>
     </div>
 
@@ -132,15 +134,19 @@
     const scoresReplicant = nodecg.Replicant('score');
     
     var FOTL_Score = document.getElementById('FOTLScore');
-    var FOTR_Score = document.getElementById('FOTRScore'); 
+    var FOTR_Score = document.getElementById('FOTRScore');
+    let FOTL_Card = false;
+    let FOTR_Card = false;
 
     const incrementBtnLeft = document.getElementById('incrementLeft');
     const decrementBtnLeft = document.getElementById('decrementLeft');
     const setBtnLeft = document.getElementById('setLeft');
+    const cardBtnLeft = document.getElementById('cardLeft');
 
     const incrementBtnRight = document.getElementById('incrementRight');
     const decrementBtnRight = document.getElementById('decrementRight');
     const setBtnRight = document.getElementById('setRight');
+    const cardBtnRight = document.getElementById('cardRight');
 
     const resetBtnBoth = document.getElementById('setBoth');
     const doubleTouchBtn = document.getElementById('doubleTouch');    
@@ -149,7 +155,9 @@
         try {
             const scoreData = {
                 left: +FOTL_Score.textContent + 1,
-                right: +FOTR_Score
+                right: +FOTR_Score,
+                hasCardRight: FOTR_Card,
+                hasCardLeft: FOTL_Card
             };
             scoresReplicant.value = scoreData;
             FOTL_Score.textContent = +FOTL_Score.textContent + 1;
@@ -164,7 +172,9 @@
         try {
             const scoreData = {
                 left: +Math.max(FOTL_Score.textContent - 1, 0),
-                right: +FOTR_Score
+                right: +FOTR_Score,
+                hasCardRight: FOTR_Card,
+                hasCardLeft: FOTL_Card
             };
             scoresReplicant.value = scoreData;
             FOTL_Score.textContent = Math.max(+FOTL_Score.textContent - 1, 0);
@@ -176,9 +186,12 @@
     })
 
     setBtnLeft.addEventListener('click', () => {
+        FOTL_Card = false
         const scoreData = {
             left: 0,
-            right: +FOTR_Score
+            right: +FOTR_Score,
+            hasCardRight: FOTR_Card,
+            hasCardLeft: FOTL_Card
         };
         scoresReplicant.value = scoreData;
         FOTL_Score.textContent = 0;
@@ -188,7 +201,9 @@
         try {
             const scoreData = {
                 left: +FOTL_Score,
-                right: +FOTR_Score.textContent + 1
+                right: +FOTR_Score.textContent + 1,
+                hasCardRight: FOTR_Card,
+                hasCardLeft: FOTL_Card
             };
             scoresReplicant.value = scoreData;
             FOTR_Score.textContent = +FOTR_Score.textContent + 1;
@@ -203,7 +218,9 @@
         try {
             const scoreData = {
                 left: +FOTL_Score,
-                right: +Math.max(FOTR_Score.textContent - 1, 0)
+                right: +Math.max(FOTR_Score.textContent - 1, 0),
+                hasCardRight: FOTR_Card,
+                hasCardLeft: FOTL_Card
             };
             scoresReplicant.value = scoreData;
             FOTR_Score.textContent = Math.max(+FOTR_Score.textContent - 1, 0);
@@ -215,18 +232,25 @@
     })
 
     setBtnRight.addEventListener('click', () => {
+        FOTR_Card = false;
         const scoreData = {
             left: +FOTL_Score,
-            right: 0
+            right: 0,
+            hasCardRight: FOTR_Card,
+            hasCardLeft: FOTL_Card
         };
         scoresReplicant.value = scoreData;
         FOTR_Score.textContent = 0;
     })
 
     resetBtnBoth.addEventListener('click', () => {
+        FOTL_Card = false;
+        FOTR_Card = false;
         const scoreData = {
             left: 0,
-            right: 0
+            right: 0,
+            hasCardRight: FOTR_Card,
+            hasCardLeft: FOTL_Card
         };
         scoresReplicant.value = scoreData;
         FOTL_Score.textContent = 0;
@@ -238,7 +262,9 @@
         try {
             const scoreData = {
                 left: +FOTL_Score.textContent + 1,
-                right: +FOTR_Score.textContent + 1
+                right: +FOTR_Score.textContent + 1,
+                hasCardLeft: FOTL_Card,
+                hasCardRight: FOTR_Card
             };
             scoresReplicant.value = scoreData;
             FOTL_Score.textContent = +FOTL_Score.textContent + 1;
@@ -250,14 +276,33 @@
         }
     })
 
+    // Toggles the card status of the fencer
+    function buildCardToggle(isLeft) {
+        return () => {
+            try {
+                if (isLeft) {
+                    FOTL_Card = !FOTL_Card
+                }
+                else {
+                    FOTR_Card = !FOTR_Card
+                }
+                const scoreData = {
+                    left: +FOTL_Score.textContent,
+                    right: +FOTR_Score.textContent,
+                    hasCardLeft: FOTL_Card,
+                    hasCardRight: FOTR_Card
+                };
+                scoresReplicant.value = scoreData;
+                }
+            catch(error) {
+                console.error('Error toggling card', error);
+                showStatus('Error toggling card', error);
+            }
+        };
+    }
 
-    // // Update UI when replicant changes
-    // scoreData.on('change', (newValue) => {
-    //     if (newValue) {
-    //         FOTL_Score.textContent = newValue.FOTL_Score;
-    //         FOTR_Score.textContent = newValue.FOTR?.score;
-    //     }
-    // });
+    cardBtnLeft.addEventListener('click', buildCardToggle(true));
+    cardBtnRight.addEventListener('click', buildCardToggle(false));
 
     // Show status message
     function showStatus(message, isError = false) {
